@@ -1,11 +1,9 @@
-
-import { NavBar } from "@/components/NavBar";
 import { ThemedText } from "@/components/ThemedText";
 import { useThemeColors } from "@/hooks/useThemeColors";
 import React from "react";
 import { SafeAreaView, StyleSheet } from "react-native";
 
-export default function Index() {
+export default function Recipes() {
   const colors =useThemeColors();
   return (
     <SafeAreaView style={[styles.container, {backgroundColor:colors.ivoire}]}>

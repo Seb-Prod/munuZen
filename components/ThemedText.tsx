@@ -1,12 +1,7 @@
-import { StyleSheet } from "react-native"
-
-/**
- * Styles typographiques réutilisables pour le composant `ThemedText`.
- *
- * Chaque style correspond à une hiérarchie visuelle prédéfinie (headline, subtitle, body, etc.),
- * visant à assurer une cohérence dans toute l'application.
- */
-export const textStyles = StyleSheet.create({
+import { Colors } from "@/constants/Colors"
+import { useThemeColors } from "@/hooks/useThemeColors"
+import { StyleSheet, Text, type TextProps } from "react-native"
+const styles = StyleSheet.create({
   /**
    * Texte secondaire ou de support.
    * Petite taille, utile pour les annotations ou textes très discrets.
@@ -61,3 +56,13 @@ export const textStyles = StyleSheet.create({
     fontWeight: "bold",
   },
 })
+
+type Props = TextProps & {
+  variant?: keyof typeof styles,
+  color?: keyof typeof Colors["light"]
+}
+export function ThemedText({ variant, color, ...rest }: Props) {
+  const colors = useThemeColors()
+  return <Text style={[styles[variant ?? 'body3'], {color: colors[color ?? "vert"]}]} {...rest} />
+}
+
