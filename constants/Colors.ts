@@ -18,6 +18,10 @@ export const Colors: Record<Theme, ThemeColors> = {
     vert: "#00C46A",
     jaune: "#FFD93B",
     ivoire: "#1E1E1E",
-    blanc:"#566573",
+    blanc:"#1A1A1A",
   },
+}
+
+export function getSafeTheme(theme: string | null | undefined): Theme {
+  return theme === "dark" ? "dark" : "light";
 }

@@ -1,12 +1,14 @@
 import { NavBar } from "@/components/NavBar";
 import { useThemeColors } from "@/hooks/useThemeColors";
 import { Stack } from "expo-router";
-import { View, StyleSheet } from "react-native"
+import { View, StyleSheet, useColorScheme } from "react-native"
 
 export default function RootLayout() {
-  const colors = useThemeColors()
+  const theme = useColorScheme() ?? "light"; 
+  const colors = useThemeColors();
+
   return (
-    <View style={styles.container}>
+    <View key={theme} style={[styles.container]}>
       <Stack
         screenOptions={{
           headerShown: false,
@@ -28,10 +30,8 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    paddingBottom: 10,
-    paddingTop: 10,
-    borderTopWidth: 1,
-    borderTopColor: "#ddd",
+    paddingBottom:15,
+    paddingTop:10,
     borderRadius:5,
   },
 });

@@ -9,7 +9,7 @@ export default function Index() {
   const colors =useThemeColors();
   return (
     <SafeAreaView style={[styles.container, {backgroundColor:colors.ivoire}]}>
-      <ThemedText variant="headline">MenuZen</ThemedText>
+      <ThemedText variant="headline">MenuZen index</ThemedText>
     </SafeAreaView>
 
   );

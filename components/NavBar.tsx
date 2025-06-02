@@ -1,51 +1,51 @@
-import { useRoute } from "@react-navigation/native";
-import { useEffect } from "react";
 import { View, StyleSheet } from "react-native";
 import { ButtonIcon } from "./ButtonIcon";
+import { usePathname } from "expo-router";
+import { useEffect } from "react";
+import { ROUTES, RoutePath } from "@/constants/Routes"; // adapt path
+import { Ionicons } from "@expo/vector-icons";
 
 export function NavBar() {
-    const route = useRoute();
+  const pathname = usePathname();
 
-    useEffect(() => {
-        console.log('Nom de la page actuelle : ', route.name)
-    }, [route]);
+  useEffect(() => {
+    console.log("Page active :", pathname);
+  }, [pathname]);
 
-    const links = [
-        { iconName: "home-outline", link: "/recipes", label: "Recettes" },
-        { iconName: "calendar-outline", link: "/", label: "Planning" },
-        { iconName: "cart-outline", link: "shoppingList", label: "Ma litste" },
-        { iconName: "add-circle-outline", link: "addRecipe", label: "Soumettre" },
-        { iconName: "menu", link: "menu", label: "Menu" }
-    ] as const;
+  const links: {
+    iconName: keyof typeof Ionicons.glyphMap;
+    path: RoutePath;
+    label: string;
+  }[] = [
+    { iconName: "home-outline", path: ROUTES.RECIPES, label: "Recettes" },
+    { iconName: "calendar-outline", path: ROUTES.PLANNING, label: "Planning" },
+    { iconName: "cart-outline", path: ROUTES.SHOPPING_LIST, label: "Ma liste" },
+    { iconName: "add-circle-outline", path: ROUTES.ADD_RECIPE, label: "Soumettre" },
+    { iconName: "menu", path: ROUTES.MENU, label: "Menu" },
+  ];
 
-    const routeName = route.name.toLowerCase();
-
-    return (
-        <View style={styles.navBar}>
-            {links.map(({ iconName, link, label }, index) => {
-                const linkName = link.toLowerCase().replace("/", "");
-
-                const isActive = routeName === linkName;
-
-                return (
-                    <ButtonIcon
-                        key={index}
-                        iconName={iconName}
-                        link={`/${linkName}`}
-                        label={label}
-                        active={isActive}
-                    />
-                );
-            })}
-        </View>
-    );
+  return (
+    <View style={styles.navBar}>
+      {links.map(({ iconName, path, label }, index) => {
+        const isActive = pathname === path;
+        return (
+          <ButtonIcon
+            key={index}
+            iconName={iconName}
+            link={path}
+            label={label}
+            active={isActive}
+          />
+        );
+      })}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-    navBar: {
-        flexDirection: "row",
-        justifyContent: "space-around",
-        alignItems: "center",
-        marginBottom: 12,
-    },
+  navBar: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+  },
 });

@@ -7,7 +7,7 @@ export default function Recipes() {
   const colors =useThemeColors();
   return (
     <SafeAreaView style={[styles.container, {backgroundColor:colors.ivoire}]}>
-      <ThemedText variant="headline">MenuZen recipes</ThemedText>
+      <ThemedText variant="headline">Menu</ThemedText>
     </SafeAreaView>
 
   );

@@ -1,62 +1,42 @@
-import { Ionicons } from "@expo/vector-icons"
-import { router } from "expo-router"
-import { TouchableOpacity, StyleSheet, View } from "react-native"
-import { ThemedText } from "./ThemedText"
+import { Link } from "expo-router";
+import { Text, Pressable, StyleSheet } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import type { RoutePath } from "@/constants/Routes";
+import { useThemeColors } from "@/hooks/useThemeColors";
 
 type Props = {
-    iconName: keyof typeof Ionicons.glyphMap,
-    link: string,
-    label: string,
-    active: boolean
-}
+  iconName: keyof typeof Ionicons.glyphMap;
+  label: string;
+  link: RoutePath;
+  active?: boolean;
+};
 
-export function ButtonIcon({ iconName, link, label, active }: Props) {
-    const handlePress = () => {
-        if (!active) {
-            router.push({ pathname: link as any })
-        }
-    }
-
-    return (
-        <TouchableOpacity
-            onPress={handlePress}
-            accessibilityRole="button"
-            accessibilityLabel={`Naviguer vers ${link}`}
-            style={[styles.button, active && styles.activeItem]}
-        >
-            <View style={styles.iconTextWrapper}>
-                <Ionicons
-                    name={iconName}
-                    size={26}
-                    color={active ? 'black' : 'black'}
-                />
-                <ThemedText variant="caption" style={[styles.label]}>{label}</ThemedText>
-            </View>
-
-        </TouchableOpacity>
-    )
+export function ButtonIcon({ iconName, label, link, active = false }: Props) {
+  const colors = useThemeColors();
+  return (
+    <Link href={{ pathname: link }} asChild>
+      <Pressable style={styles.container}>
+        <Ionicons
+          name={iconName}
+          size={24}
+          color={active ? colors.vert : "#888"} 
+        />
+        <Text style={[styles.label, { color: active ? colors.vert : "#888" }]}>
+          {label}
+        </Text>
+      </Pressable>
+    </Link>
+  );
 }
 
 const styles = StyleSheet.create({
-    button: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexDirection: 'column'
-    },
-    activeItem: {
-        backgroundColor: '#1E4D2B',
-    },
-    iconTextWrapper: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: 60,
-    },
-    label: {
-        marginTop: 4,
-        fontSize: 8,
-        textAlign: 'center',
-        color: 'black',
-        lineHeight: 14,
-        flexShrink: 1,
-    },
-})
+  container: {
+    alignItems: "center",
+    paddingHorizontal: 6,
+  },
+  label: {
+    fontSize: 12,
+    color: "#888",
+    marginTop: 4,
+  }
+});
