@@ -15,11 +15,15 @@ export function Button({ label, backgroundColor, color, onPress, ...rest }: Prop
 
     return (
         <TouchableOpacity
-            onPress={onPress}
+            onPress={() => {
+                console.log("onPress appelé");
+                onPress();
+            }}
             style={[
                 styles.container,
-                { backgroundColor: backgroundColor ? colors[backgroundColor] : colors.vert }
-                , rest.style]}
+                { backgroundColor: backgroundColor ? colors[backgroundColor] : colors.vert },
+                rest.style && rest.style
+            ]}
 
         >
             <ThemedText
