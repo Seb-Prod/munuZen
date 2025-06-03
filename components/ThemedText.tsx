@@ -7,7 +7,7 @@ const styles = StyleSheet.create({
    * Petite taille, utile pour les annotations ou textes très discrets.
    */
   body3: {
-    fontSize: 10,
+    fontSize: 14,
     lineHeight: 16,
   },
 
@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
    * Taille large et gras, pour attirer l'attention.
    */
   headline: {
-    fontSize: 24,
+    fontSize: 22,
     lineHeight: 32,
     fontWeight: "bold",
   },
@@ -61,8 +61,12 @@ type Props = TextProps & {
   variant?: keyof typeof styles,
   color?: keyof typeof Colors["light"]
 }
-export function ThemedText({ variant, color, ...rest }: Props) {
+export function ThemedText({ variant, color, style, ...rest }: Props) {
   const colors = useThemeColors()
-  return <Text style={[styles[variant ?? 'body3'], {color: colors[color ?? "vert"]}]} {...rest} />
+  return <Text style={[
+    styles[variant ?? 'body3'],
+    { color: colors[color ?? "texte"] },
+    style
+  ]} {...rest} />
 }
 
