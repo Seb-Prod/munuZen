@@ -1,9 +1,9 @@
-import { View, StyleSheet } from "react-native";
-import { ButtonIcon } from "./ButtonIcon";
-import { usePathname } from "expo-router";
-import { useEffect } from "react";
 import { ROUTES, RoutePath } from "@/constants/Routes"; // adapt path
 import { Ionicons } from "@expo/vector-icons";
+import { usePathname } from "expo-router";
+import { useEffect } from "react";
+import { StyleSheet, View } from "react-native";
+import { ButtonIcon } from "./ButtonIcon";
 
 export function NavBar() {
   const pathname = usePathname();

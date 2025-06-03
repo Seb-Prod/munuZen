@@ -19,9 +19,9 @@ export function ButtonIcon({ iconName, label, link, active = false }: Props) {
         <Ionicons
           name={iconName}
           size={24}
-          color={active ? colors.vert : "#888"} 
+          color={active ? colors.vert : colors.texte} 
         />
-        <Text style={[styles.label, { color: active ? colors.vert : "#888" }]}>
+        <Text style={[styles.label, { color: active ? colors.vert : colors.texte }]}>
           {label}
         </Text>
       </Pressable>

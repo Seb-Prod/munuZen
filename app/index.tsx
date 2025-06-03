@@ -1,5 +1,4 @@
 
-import { NavBar } from "@/components/NavBar";
 import { ThemedText } from "@/components/ThemedText";
 import { useThemeColors } from "@/hooks/useThemeColors";
 import React from "react";
