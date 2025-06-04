@@ -3,6 +3,11 @@ import { AuthResult } from "@/types/user";
 import { handleApiError } from "@/utils/handleApiError";
 import { useState } from "react";
 
+// Fonction utilitaire
+function wait(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 export function useLogin() {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<AuthResult | null>(null);
@@ -14,14 +19,16 @@ export function useLogin() {
     setData(null);
 
     try {
-      const response = await loginUser(email, password);
+      await wait(5000); // Simule une connexion lente
 
+      const response = await loginUser(email, password);
+      console.log(response)
       if (response.statusCode === 200 && response.data?.data) {
         setData(response.data.data);
-      } else if (response.statusCode === 422) {
-        setError('Veuillez corriger les erreurs dans le formulaire');
       } else {
-        setError('Échec de la connexion. Veuillez réessayer');
+        const message =
+          response.data?.message || "Une erreur inconnue s'est produite.";
+        setError(message);
       }
     } catch (err: any) {
       const errorMessage = handleApiError(err);

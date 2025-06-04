@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, TouchableOpacity, Switch, ScrollView, Alert } from "react-native";
+import { View, StyleSheet, TouchableOpacity, Switch } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { Button } from "@/components/Button";
 import { useThemeColors } from "@/hooks/useThemeColors";
@@ -9,19 +9,36 @@ import { CustomTextInput } from "../CustomTextInput";
 import { TermsOfUse } from "./TermsOfUse";
 import { useLogin } from "@/hooks/user/useLogin";
 import Toast from "react-native-toast-message";
+import { LoadingOverlay } from "../LoadingOverlay";
 
 export function AuthModalContent() {
     const colors = useThemeColors();
     const { submit, loading, data, error } = useLogin();
     const [isSignup, setIsSignup] = useState(false);
-    const [email, setEmail] = useState("a");
+    const [email, setEmail] = useState("");
     const [pseudo, setPseudo] = useState("");
-    const [password, setPassword] = useState("a");
+    const [password, setPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
     const [rememberMe, setRememberMe] = useState(false);
     const [showTerms, setShowTerms] = useState(false);
 
     const toggleAuthMode = () => setIsSignup((prev) => !prev);
+
+    const texts = isSignup
+        ? {
+            title: "Créez un compte gratuitement",
+            toggle: "Connectez-vous.",
+            togglePrompt: "Déjà un compte ?",
+            emailPlaceholder: "Email",
+            button: "Créer un compte",
+        }
+        : {
+            title: "Connectez-vous à votre compte",
+            toggle: "Créez-en un.",
+            togglePrompt: "Pas encore de compte ?",
+            emailPlaceholder: "Pseudo ou email",
+            button: "Se connecter",
+        };
 
     const handleSubmit = async () => {
         if (!email || !password || (isSignup && !pseudo)) {
@@ -34,7 +51,7 @@ export function AuthModalContent() {
                 console.log("Je crée un compte");
             } else {
                 console.log("je me connecte")
-                await submit("sebastien.drillaud@gmail.com", "Menace32");
+                await submit("sebastien.drillaud@gmail.co", "Menace32");
                 if (rememberMe) {
                     console.log("Mémorisation des identifiants");
                     // Stockage en AsyncStorage possible ici
@@ -49,14 +66,18 @@ export function AuthModalContent() {
     };
 
     useEffect(() => {
-        console.log(data?.email)
-        Toast.show({
-            type: 'success',
-            text1: 'Succès',
-            text2: 'Opération réussie !'
-        });
-
+        if (data) {
+            Toast.show({
+                type: 'success',
+                text1: 'Succès',
+                text2: 'Connexion réussie !',
+            });
+        }
     }, [data]);
+
+    useEffect(() => {
+        if (error) setErrorMessage(error);
+    }, [error]);
 
     if (showTerms) {
         return <TermsOfUse onClose={() => setShowTerms(false)} />;
@@ -78,14 +99,14 @@ export function AuthModalContent() {
         <View style={styles.container}>
             <Logo />
             <ThemedText variant="headline" color="vert" style={styles.centerText}>
-                {isSignup ? "Créez un compte gratuitement" : "Connectez-vous à votre compte"}
+                {texts.title}
             </ThemedText>
 
             <Row style={styles.centerTextRow}>
-                <ThemedText>{isSignup ? "Déjà un compte ?" : "Pas encore de compte ?"}</ThemedText>
+                <ThemedText>{texts.togglePrompt}</ThemedText>
                 <TouchableOpacity onPress={toggleAuthMode}>
                     <ThemedText style={styles.underlineText}>
-                        {isSignup ? "Connectez-vous." : "Créez-en un."}
+                        {texts.toggle}
                     </ThemedText>
                 </TouchableOpacity>
             </Row>
@@ -100,7 +121,7 @@ export function AuthModalContent() {
             )}
 
             <CustomTextInput
-                placeholder={isSignup ? "Email" : "Pseudo ou email"}
+                placeholder={texts.emailPlaceholder}
                 value={email}
                 onChangeText={setEmail}
                 keyboardType={isSignup ? "email-address" : "default"}
@@ -123,7 +144,7 @@ export function AuthModalContent() {
             )}
 
             <Button
-                label={isSignup ? "Créer un compte" : "Se connecter"}
+                label={texts.button}
                 onPress={handleSubmit}
                 style={styles.button}
             />
@@ -139,6 +160,7 @@ export function AuthModalContent() {
             )}
 
             {!!errorMessage && <ThemedText style={styles.error}>{errorMessage}</ThemedText>}
+            <LoadingOverlay visible={loading} text="Connexion en cours..." />
         </View>
     );
 }
