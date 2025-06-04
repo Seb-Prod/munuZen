@@ -1,6 +1,6 @@
 // components/auth/TermsOfUse.tsx
 import React from "react";
-import { View, FlatList, StyleSheet, ScrollView } from "react-native";
+import { View, StyleSheet, ScrollView } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { Button } from "@/components/Button";
 

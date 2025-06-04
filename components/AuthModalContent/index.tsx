@@ -14,6 +14,9 @@ import { TermsOfUse } from "./TermsOfUse";
 import { styles } from "./styles";
 import { ROUTES } from "@/constants/Routes";
 import { router } from "expo-router";
+import { useRegister } from "@/hooks/auth/useRegister";
+import { EmailVerificationModal } from "./EmailVerificationModal";
+import { useResendActivationEmail } from "@/hooks/auth/useResendActivationEmail";
 
 interface AuthFormState {
     email: string;
@@ -33,16 +36,20 @@ export function AuthModalContent() {
         confirmPassword: "",
     });
 
-    const { submit: submitLogin, loading: loginLoading, data: loginData, error: loginError } = useLogin();
+    const { submit: submitLogin, loading: loginLoading, data: loginData, error: loginError, reset: resetLogin } = useLogin();
+    const { submit: submitSignup, loading: signupLoading, data: signupData, error: signupError, reset: resetSignup } = useRegister();
+    const { submit: submitResendActivationEmail, loading: resendActivationEmailLoading, error: resendActivationEmailError } = useResendActivationEmail();
 
     const [isSignup, setIsSignup] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [rememberMe, setRememberMe] = useState(false);
     const [showTerms, setShowTerms] = useState(false);
+    const [showEmailModal, setShowEmailModal] = useState(false);
+    const [showResendEmailButton, setShowResendEmailButton] = useState(false);
 
-    const loading = loginLoading //|| signupLoading;
-    const data = loginData //|| signupData;
-    const error = loginError //|| signupError;
+    const loading = loginLoading || signupLoading || resendActivationEmailLoading;
+    const data = loginData || signupData;
+    const error = loginError || signupError || resendActivationEmailError;
 
     const handleChange = (field: keyof AuthFormState, value: string) => {
         setFormData(prevData => ({
@@ -56,10 +63,10 @@ export function AuthModalContent() {
         setIsSignup((prev) => !prev);
         setErrorMessage("");
         setFormData({
-            email: "",
-            pseudo: "",
-            password: "",
-            confirmPassword: "",
+            email: "sebastien.drillaud@gmail.com",
+            pseudo: "seb",
+            password: "Menace3232",
+            confirmPassword: "Menace3232",
         });
     };
 
@@ -108,7 +115,7 @@ export function AuthModalContent() {
             setErrorMessage("");
 
             if (isSignup) {
-                console.log("Création de compte pour:", formData.email);
+                await submitSignup(formData.pseudo, formData.email, formData.password);
             } else {
                 await submitLogin(formData.email, formData.password);
                 if (rememberMe) {
@@ -120,6 +127,17 @@ export function AuthModalContent() {
             setErrorMessage("Une erreur s'est produite. Veuillez réessayer.");
         }
     };
+
+    const resendActivationEmail = async () => {
+        setErrorMessage("");
+        try {
+            await submitResendActivationEmail(formData.email);
+            setShowEmailModal(true);
+        } catch (e) {
+            console.error("Erreur lors de la soumission:", e);
+            setErrorMessage("Une erreur s'est produite. Veuillez réessayer.");
+        }
+    }
 
     const gererMotDePasseOublie = () => {
         console.log("Mot de passe oublié pour:", formData.email,);
@@ -139,23 +157,35 @@ export function AuthModalContent() {
                 text1: 'Succès',
                 text2: message,
             });
+            
+            if (!isSignup) {
+                resetLogin();
+                setTimeout(() => {
+                    router.replace(ROUTES.PLANNING);
+                }, 500);
+            } else {
+                resetSignup();
+                setIsSignup(false);
+                setShowEmailModal(true);
+            }
 
-            setTimeout(() => {
-                router.replace(ROUTES.PLANNING); // ou ROUTES.MENU selon ton cas
-                //onSuccess?.(); // fermeture du modal si géré à l'extérieur
-            }, 500); // léger délai pour éviter le conflit avec la fermeture du modal
         }
-    }, [data, isSignup]);
+    }, [data, isSignup, resetLogin, resetSignup]);
 
     useEffect(() => {
         if (error) {
             setErrorMessage(error);
         }
+        const needActivationMessage = "Votre compte n'est pas encore activé.";
+
+        if (error === needActivationMessage) {
+            setShowResendEmailButton(true);
+        } else {
+            setShowResendEmailButton(false);
+        }
     }, [error]);
 
-    if (showTerms) {
-        return <TermsOfUse onClose={() => setShowTerms(false)} />;
-    }
+
 
     const BoutonSeSouvenirDeMoi = () => (
         <Row style={styles.rememberMeRow}>
@@ -170,8 +200,16 @@ export function AuthModalContent() {
         </Row>
     );
 
+    if (showTerms) {
+        return <TermsOfUse onClose={() => setShowTerms(false)} />;
+    }
+
+    if (showEmailModal) {
+        return <EmailVerificationModal email={formData.email} onClose={() => setShowEmailModal(false)} />;
+    }
+
     return (
-    
+
         <View style={styles.container}>
             <Logo />
             <ThemedText variant="headline" color="vert" style={styles.centerText}>
@@ -231,7 +269,7 @@ export function AuthModalContent() {
             <Button
                 label={texts.button}
                 onPress={handleSubmit}
-                style={styles.button}
+                style={styles.buttonSmall}
             />
 
             {!isSignup && <BoutonSeSouvenirDeMoi />}
@@ -244,7 +282,21 @@ export function AuthModalContent() {
                 </TouchableOpacity>
             )}
 
+
+
             {!!errorMessage && <ThemedText style={styles.error}>{errorMessage}</ThemedText>}
+
+            {showResendEmailButton && (
+                <Button
+                    label="Renvoyer l'email d'activation"
+                    backgroundColor="jaune"
+                    color="ombre"
+                    onPress={() => resendActivationEmail()}
+                    style={styles.buttonSmall}
+                />
+            )}
+
+
             <LoadingOverlay visible={loading} text="Connexion en cours..." />
         </View>
     );

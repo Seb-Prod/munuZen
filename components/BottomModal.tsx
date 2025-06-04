@@ -67,8 +67,8 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     paddingHorizontal: 20,
-    paddingTop: 10,
-    paddingBottom: 20,
+    paddingTop: 0,
+    paddingBottom: 0,
     maxHeight: height * 0.8, // limite la hauteur max
     position: "relative",
   },

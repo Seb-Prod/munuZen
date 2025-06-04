@@ -18,8 +18,11 @@ export const styles = StyleSheet.create({
     rightText: {
         textAlign: "right",
     },
-    button: {
-        alignSelf: "stretch",
+    buttonSmall: {
+        alignSelf: "center",
+        paddingHorizontal: 15,
+        paddingVertical: 8,
+        marginTop: 10,
     },
     error: {
         marginTop: 10,

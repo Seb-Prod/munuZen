@@ -1,5 +1,5 @@
 import { login } from "@/services/authServices";
-import { AuthResult } from "@/types/user";
+import { LoginResult } from "@/types/user";
 import { handleApiError } from "@/utils/handleApiError";
 import { useState } from "react";
 
@@ -10,7 +10,7 @@ function wait(ms: number) {
 
 export function useLogin() {
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<AuthResult | null>(null);
+  const [data, setData] = useState<LoginResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   async function submit(email: string, password: string) {
@@ -38,5 +38,10 @@ export function useLogin() {
     }
   }
 
-  return { submit, loading, data, error };
+  const reset = () => {
+    setData(null);
+    setError(null);
+  };
+
+  return { submit, loading, data, error, reset };
 }
