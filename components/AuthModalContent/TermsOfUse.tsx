@@ -1,6 +1,6 @@
 // components/auth/TermsOfUse.tsx
 import React from "react";
-import { View, FlatList, StyleSheet } from "react-native";
+import { View, FlatList, StyleSheet, ScrollView } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { Button } from "@/components/Button";
 
@@ -82,61 +82,64 @@ const termsData = [
 ];
 
 export function TermsOfUse({ onClose }: TermsOfUseProps) {
-    const renderItem = ({ item }: { item: typeof termsData[0] }) => {
-        switch (item.type) {
-            case 'header':
-                return (
-                    <ThemedText variant="headline" color="vert" style={styles.centerText}>
-                        {item.content}
-                    </ThemedText>
-                );
-            case 'title':
-                return (
-                    <ThemedText variant="subtitle2" style={styles.sectionTitle}>
-                        {item.content}
-                    </ThemedText>
-                );
-            case 'text':
-                return (
-                    <ThemedText style={styles.sectionText}>
-                        {item.content}
-                    </ThemedText>
-                );
-            default:
-                return null;
-        }
-    };
-
     return (
-        <View style={styles.container}>
-            <FlatList
-                data={termsData}
-                renderItem={renderItem}
-                keyExtractor={(item) => item.id}
-                style={styles.listContainer}
-                showsVerticalScrollIndicator={true}
-                bounces={true}
-                contentContainerStyle={styles.listContent}
-            />
+        <ScrollView
+            style={styles.container}
+            contentContainerStyle={styles.content}
+            showsVerticalScrollIndicator
+        >
+            {termsData.map(item => {
+                switch (item.type) {
+                    case 'header':
+                        return (
+                            <ThemedText
+                                key={item.id}
+                                variant="headline"
+                                color="vert"
+                                style={styles.centerText}
+                            >
+                                {item.content}
+                            </ThemedText>
+                        );
+                    case 'title':
+                        return (
+                            <ThemedText
+                                key={item.id}
+                                variant="subtitle2"
+                                style={styles.sectionTitle}
+                            >
+                                {item.content}
+                            </ThemedText>
+                        );
+                    case 'text':
+                        return (
+                            <ThemedText
+                                key={item.id}
+                                style={styles.sectionText}
+                            >
+                                {item.content}
+                            </ThemedText>
+                        );
+                    default:
+                        return null;
+                }
+            })}
             
             <View style={styles.buttonContainer}>
                 <Button label="Retour" onPress={onClose} style={styles.button} />
             </View>
-        </View>
+        </ScrollView>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        height: 500, // Hauteur fixe contrainte
-        marginTop: 20,
+        flexGrow: 1,
     },
-    listContainer: {
-        flex: 1,
-        marginBottom: 16,
-    },
-    listContent: {
+    content: {
+        paddingHorizontal: 20,
         paddingBottom: 20,
+        paddingTop: 10,
     },
     centerText: {
         textAlign: "center",
@@ -155,7 +158,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
     },
     buttonContainer: {
-        paddingBottom: 10,
+        marginTop: 20,
     },
     button: {
         alignSelf: "stretch",
