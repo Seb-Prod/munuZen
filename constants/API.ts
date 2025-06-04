@@ -1,1 +1,1 @@
-export const API_BASE_URL = "https://seb-prod.alwaysdata.net/kidsspot/";
+export const API_BASE_URL = "http://192.168.1.69/api_menuzen/public";

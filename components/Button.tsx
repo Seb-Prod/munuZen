@@ -16,7 +16,6 @@ export function Button({ label, backgroundColor, color, onPress, ...rest }: Prop
     return (
         <TouchableOpacity
             onPress={() => {
-                console.log("onPress appelé");
                 onPress();
             }}
             style={[

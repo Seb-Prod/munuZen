@@ -1,18 +1,15 @@
 import { Button } from "@/components/Button";
 import { useThemeColors } from "@/hooks/useThemeColors";
-import React, { useCallback, useState } from "react";
-import { Pressable, StyleSheet, View, Text } from "react-native";
+import React, { useState } from "react";
+import { StyleSheet, View } from "react-native";
 import { BottomModal } from "@/components/BottomModal";
 import { AuthModalContent } from "@/components/auth/AuthModalContent";
-import { useFocusEffect } from "expo-router";
 
 export default function Menu() {
-  console.log("Menu rendu")
   const colors = useThemeColors();
   const [isModalVisible, setModalVisible] = useState(false);
 
   const handleLogin = () => {
-    console.log("je click sur le bouton")
     setModalVisible(true);
   };
 

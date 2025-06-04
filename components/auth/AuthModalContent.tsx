@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { View, StyleSheet, TouchableOpacity, Switch, ScrollView } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, StyleSheet, TouchableOpacity, Switch, ScrollView, Alert } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { Button } from "@/components/Button";
 import { useThemeColors } from "@/hooks/useThemeColors";
@@ -7,13 +7,16 @@ import Logo from "../Logo";
 import { Row } from "../Row";
 import { CustomTextInput } from "../CustomTextInput";
 import { TermsOfUse } from "./TermsOfUse";
+import { useLogin } from "@/hooks/user/useLogin";
+import Toast from "react-native-toast-message";
 
 export function AuthModalContent() {
     const colors = useThemeColors();
+    const { submit, loading, data, error } = useLogin();
     const [isSignup, setIsSignup] = useState(false);
-    const [email, setEmail] = useState("");
+    const [email, setEmail] = useState("a");
     const [pseudo, setPseudo] = useState("");
-    const [password, setPassword] = useState("");
+    const [password, setPassword] = useState("a");
     const [errorMessage, setErrorMessage] = useState("");
     const [rememberMe, setRememberMe] = useState(false);
     const [showTerms, setShowTerms] = useState(false);
@@ -30,11 +33,13 @@ export function AuthModalContent() {
             if (isSignup) {
                 console.log("Je crée un compte");
             } else {
+                console.log("je me connecte")
+                await submit("sebastien.drillaud@gmail.com", "Menace32");
                 if (rememberMe) {
                     console.log("Mémorisation des identifiants");
                     // Stockage en AsyncStorage possible ici
                 }
-                console.log("Je me connecte");
+
             }
             setErrorMessage("");
             // Fermer modal ou rediriger ici
@@ -42,6 +47,16 @@ export function AuthModalContent() {
             setErrorMessage("Une erreur s'est produite.");
         }
     };
+
+    useEffect(() => {
+        console.log(data?.email)
+        Toast.show({
+            type: 'success',
+            text1: 'Succès',
+            text2: 'Opération réussie !'
+        });
+
+    }, [data]);
 
     if (showTerms) {
         return <TermsOfUse onClose={() => setShowTerms(false)} />;
