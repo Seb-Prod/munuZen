@@ -4,10 +4,11 @@ import { apiPost } from "./apiClients";
 
 
 
-export async function loginUser(
+export async function login(
   email: string,
   password: string
 ): Promise<ApiResponse<ApiDataWrapper<AuthResult>>> {
   const data = { email, password };
   return apiPost<ApiDataWrapper<AuthResult>>('login', data);
 }
+

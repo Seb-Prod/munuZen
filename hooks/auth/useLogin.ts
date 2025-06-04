@@ -1,4 +1,4 @@
-import { loginUser } from "@/services/userServices";
+import { login } from "@/services/authServices";
 import { AuthResult } from "@/types/user";
 import { handleApiError } from "@/utils/handleApiError";
 import { useState } from "react";
@@ -19,9 +19,9 @@ export function useLogin() {
     setData(null);
 
     try {
-      await wait(5000); // Simule une connexion lente
+      await wait(1); // Simule une connexion lente
 
-      const response = await loginUser(email, password);
+      const response = await login(email, password);
       console.log(response)
       if (response.statusCode === 200 && response.data?.data) {
         setData(response.data.data);

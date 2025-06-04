@@ -6,8 +6,11 @@ import {
   TouchableWithoutFeedback,
   Dimensions,
   TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons"; // Assure-toi d’avoir expo/vector-icons
+import { Ionicons } from "@expo/vector-icons";
 
 const { height } = Dimensions.get("window");
 
@@ -25,26 +28,31 @@ export function BottomModal({
   backgroundColor = "#fff",
 }: Props) {
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="slide"
-      onRequestClose={onClose}
-    >
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        style={{ flex: 1 }}
+      >
+        <View style={styles.overlay}>
+          <TouchableWithoutFeedback onPress={onClose}>
+            <View style={StyleSheet.absoluteFillObject} />
+          </TouchableWithoutFeedback>
 
-      <View style={styles.overlay}>
-        <TouchableWithoutFeedback onPress={onClose}>
-          <View style={StyleSheet.absoluteFillObject} />
-        </TouchableWithoutFeedback>
-        <View style={[styles.bottomSheet, { backgroundColor }]}>
-          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <Ionicons name="close" size={24} color="#000" />
-          </TouchableOpacity>
-          {children}
+          <View style={[styles.bottomSheet, { backgroundColor }]}>
+            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+              <Ionicons name="close" size={24} color="#000" />
+            </TouchableOpacity>
+
+            <ScrollView
+              contentContainerStyle={{ paddingBottom: 20 }}
+              showsVerticalScrollIndicator={false}
+              keyboardShouldPersistTaps="handled"
+            >
+              {children}
+            </ScrollView>
+          </View>
         </View>
-
-      </View>
-
+      </KeyboardAvoidingView>
     </Modal>
   );
 }
@@ -58,10 +66,10 @@ const styles = StyleSheet.create({
   bottomSheet: {
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    padding: 40,
+    paddingHorizontal: 20,
     paddingTop: 10,
-    minHeight: height * 0.3,
-    maxHeight: height * 0.8,
+    paddingBottom: 20,
+    maxHeight: height * 0.8, // limite la hauteur max
     position: "relative",
   },
   closeButton: {

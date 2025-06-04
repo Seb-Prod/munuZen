@@ -3,10 +3,13 @@ import { useThemeColors } from "@/hooks/useThemeColors";
 import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { BottomModal } from "@/components/BottomModal";
-import { AuthModalContent } from "@/components/auth/AuthModalContent";
+import { AuthModalContent } from "@/components/AuthModalContent";
+import { useNavigation } from "expo-router";
 
 export default function Menu() {
   const colors = useThemeColors();
+  const navigation = useNavigation();
+  
   const [isModalVisible, setModalVisible] = useState(false);
 
   const handleLogin = () => {
@@ -26,7 +29,7 @@ export default function Menu() {
       />
 
       <BottomModal visible={isModalVisible} onClose={closeModal} backgroundColor={colors.fondNavBar}>
-        <AuthModalContent />
+        <AuthModalContent/>
       </BottomModal>
     </View>
   );
