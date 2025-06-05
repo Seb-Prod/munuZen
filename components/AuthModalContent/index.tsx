@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { View, TouchableOpacity, Switch } from "react-native";
+import { View, TouchableOpacity } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { Button } from "@/components/Button";
-import { useThemeColors } from "@/hooks/useThemeColors";
 import Logo from "../Logo";
 import { Row } from "../Row";
 import { CustomTextInput } from "../CustomTextInput";
@@ -17,6 +16,9 @@ import { router } from "expo-router";
 import { useRegister } from "@/hooks/auth/useRegister";
 import { EmailVerificationModal } from "./EmailVerificationModal";
 import { useResendActivationEmail } from "@/hooks/auth/useResendActivationEmail";
+import { useUser } from "@/contexts/UserContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import BoutonSeSouvenirDeMoi from "./BoutonSeSouvenirDeMoi";
 
 interface AuthFormState {
     email: string;
@@ -27,12 +29,12 @@ interface AuthFormState {
 
 
 export function AuthModalContent() {
-    const colors = useThemeColors();
+    const { setToken, setEmail, setPseudo } = useUser();
 
     const [formData, setFormData] = useState<AuthFormState>({
-        email: "",
+        email: "sebastien.drillaud@gmail.com",
         pseudo: "",
-        password: "",
+        password: "Menace3232",
         confirmPassword: "",
     });
 
@@ -151,26 +153,52 @@ export function AuthModalContent() {
 
     useEffect(() => {
         if (data) {
-            const message = isSignup ? 'Compte créé avec succès !' : 'Connexion réussie !';
-            Toast.show({
-                type: 'success',
-                text1: 'Succès',
-                text2: message,
-            });
-            
-            if (!isSignup) {
-                resetLogin();
-                setTimeout(() => {
-                    router.replace(ROUTES.PLANNING);
-                }, 500);
-            } else {
-                resetSignup();
-                setIsSignup(false);
-                setShowEmailModal(true);
-            }
+            const handleAuth = async () => {
+                const message = isSignup ? 'Compte créé avec succès !' : 'Connexion réussie !';
 
+                Toast.show({
+                    type: 'success',
+                    text1: 'Succès',
+                    text2: message,
+                });
+
+                if (!isSignup && data?.token && data?.email && data?.username) {
+                    setToken(data.token);
+                    setEmail(data.email);
+                    setPseudo(data.username);
+
+                    if (rememberMe) {
+                        await AsyncStorage.multiSet([
+                            ["userToken", data.token],
+                            ["userEmail", data.email],
+                            ["userPseudo", data.username],
+                            ["rememberMe", "true"]
+                        ]);
+                    } else {
+                        await AsyncStorage.multiRemove([
+                            "userToken",
+                            "userEmail",
+                            "userPseudo",
+                            "rememberMe"
+                        ]);
+                    }
+                }
+
+                if (!isSignup) {
+                    resetLogin();
+                    setTimeout(() => {
+                        router.replace(ROUTES.PLANNING);
+                    }, 500);
+                } else {
+                    resetSignup();
+                    setIsSignup(false);
+                    setShowEmailModal(true);
+                }
+            };
+
+            handleAuth();
         }
-    }, [data, isSignup, resetLogin, resetSignup]);
+    }, [data, isSignup, resetLogin, resetSignup, rememberMe, setEmail, setPseudo, setToken]);
 
     useEffect(() => {
         if (error) {
@@ -187,18 +215,6 @@ export function AuthModalContent() {
 
 
 
-    const BoutonSeSouvenirDeMoi = () => (
-        <Row style={styles.rememberMeRow}>
-            <Switch
-                value={rememberMe}
-                onValueChange={setRememberMe}
-                trackColor={{ false: "#ccc", true: colors.vert }}
-                thumbColor={rememberMe ? "#fff" : "#f4f3f4"}
-                accessibilityLabel="Se souvenir de moi"
-            />
-            <ThemedText style={styles.rememberMeText}>Se souvenir de moi</ThemedText>
-        </Row>
-    );
 
     if (showTerms) {
         return <TermsOfUse onClose={() => setShowTerms(false)} />;
@@ -272,7 +288,7 @@ export function AuthModalContent() {
                 style={styles.buttonSmall}
             />
 
-            {!isSignup && <BoutonSeSouvenirDeMoi />}
+            {!isSignup && <BoutonSeSouvenirDeMoi rememberMe={rememberMe} setRememberMe={setRememberMe} />}
 
             {isSignup && (
                 <TouchableOpacity onPress={() => setShowTerms(true)}>
@@ -281,8 +297,6 @@ export function AuthModalContent() {
                     </ThemedText>
                 </TouchableOpacity>
             )}
-
-
 
             {!!errorMessage && <ThemedText style={styles.error}>{errorMessage}</ThemedText>}
 

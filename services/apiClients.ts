@@ -51,7 +51,6 @@ export async function apiGet<T>(endpoint: string, token?: string): Promise<ApiRe
  */
 export async function apiPost<T>(endpoint: string, body: object, token?: string): Promise<ApiResponse<T>> {
   try {
-    console.log(body)
     const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
       method: 'POST',
       headers: getHeaders(token),

@@ -1,9 +1,10 @@
+import { UserProvider } from "@/contexts/UserContext";
 import { Stack } from "expo-router";
 import Toast, { BaseToast, ErrorToast } from "react-native-toast-message";
 
 export default function RootLayout() {
   const toastConfig = {
-    success: (props:any) => (
+    success: (props: any) => (
       <BaseToast
         {...props}
         style={{ borderLeftColor: 'green' }}
@@ -12,14 +13,14 @@ export default function RootLayout() {
         text2Style={{ fontSize: 14 }}
       />
     ),
-    error: (props:any) => (
+    error: (props: any) => (
       <ErrorToast
         {...props}
         text1Style={{ fontSize: 16, fontWeight: '600' }}
         text2Style={{ fontSize: 14 }}
       />
     ),
-    info: (props:any) => (
+    info: (props: any) => (
       <BaseToast
         {...props}
         style={{ borderLeftColor: 'blue' }}
@@ -32,10 +33,12 @@ export default function RootLayout() {
 
   return (
     <>
-      <Stack screenOptions={{ headerShown: false }} />
-      <Toast 
-        config={toastConfig} topOffset={70}
-      />
+      <UserProvider>
+        <Stack screenOptions={{ headerShown: false }} />
+        <Toast
+          config={toastConfig} topOffset={70}
+        />
+      </UserProvider>
     </>
   );
 }

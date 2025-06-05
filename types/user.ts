@@ -10,5 +10,7 @@ export interface LoginResult {
 }
 
 export interface RegisterResult{
+  token: string;
+  username:string;
   email: string;
 }

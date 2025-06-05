@@ -22,7 +22,6 @@ export function useLogin() {
       await wait(1); // Simule une connexion lente
 
       const response = await login(email, password);
-      console.log(response)
       if (response.statusCode === 200 && response.data?.data) {
         setData(response.data.data);
       } else {
