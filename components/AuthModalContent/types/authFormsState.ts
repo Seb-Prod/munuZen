@@ -4,3 +4,4 @@ export interface AuthFormState {
   password: string;
   confirmPassword: string;
 }
+

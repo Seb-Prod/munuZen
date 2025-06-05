@@ -4,7 +4,7 @@ import { useLogin } from "@/hooks/auth/useLogin";
 import { useRegister } from "@/hooks/auth/useRegister";
 import { useResendActivationEmail } from "@/hooks/auth/useResendActivationEmail";
 import React, { useState } from "react";
-import { TouchableOpacity, View, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import Toast from "react-native-toast-message";
 import { LoadingOverlay } from "../LoadingOverlay";
 import Logo from "../Logo";
@@ -19,14 +19,16 @@ import { useAuthSubmit } from "./hooks/useAuthSubmit";
 import { useResendActivationHandler } from "./hooks/useResendActivationHandler";
 import { ToggleAuthMode } from "./components/ToggleAuthmode";
 import { AuthFormState } from "./types/authFormsState";
+import ForgotPasswordButton from "./components/ForgotPasswordButton";
+import { ForgotPasswordForm } from "./components/ForgotPasswordForm";
 
 export function AuthModalContent() {
     const { setToken, setEmail, setPseudo } = useUser();
 
     const [formData, setFormData] = useState<AuthFormState>({
-        email: "sebastien.drillaud@gmail.com",
+        email: "",
         pseudo: "",
-        password: "Menace3232",
+        password: "",
         confirmPassword: "",
     });
 
@@ -37,9 +39,11 @@ export function AuthModalContent() {
     const [isSignup, setIsSignup] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [rememberMe, setRememberMe] = useState(false);
+    
     const [showTerms, setShowTerms] = useState(false);
     const [showEmailModal, setShowEmailModal] = useState(false);
     const [showResendEmailButton, setShowResendEmailButton] = useState(false);
+    const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
 
     const loading = loginLoading || signupLoading || resendActivationEmailLoading;
     const data = loginData || signupData;
@@ -83,16 +87,6 @@ export function AuthModalContent() {
         setErrorMessage
     });
 
-    const gererMotDePasseOublie = () => {
-        console.log("Mot de passe oublié pour:", formData.email,);
-        // Implémenter la logique de mot de passe oublié
-        Toast.show({
-            type: 'info',
-            text1: 'Information',
-            text2: 'Fonctionnalité en cours de développement',
-        });
-    };
-
     // Soumission ok
     useHandleAuthEffect({
         data,
@@ -114,18 +108,22 @@ export function AuthModalContent() {
         setShowResendEmailButton
     });
 
-
-
+    // Affichage des conditions d'utilisation
     if (showTerms) {
         return <TermsOfUse onClose={() => setShowTerms(false)} />;
     }
 
+    // Affichage de l'envoie du mail
     if (showEmailModal) {
         return <EmailVerificationModal email={formData.email} onClose={() => setShowEmailModal(false)} />;
     }
 
-    return (
+    // Affiche le formulaire d'oublie de mot de passe
+    if(showForgotPasswordModal){
+        return <ForgotPasswordForm formData={formData} handleChange={handleChange} onClose={() => setShowForgotPasswordModal(false)}/>
+    }
 
+    return (
         <View style={styles.container}>
             <Logo />
             <ThemedText variant="headline" color="vert" style={styles.centerText}>
@@ -146,14 +144,8 @@ export function AuthModalContent() {
                 texts={texts}
                 handleChange={handleChange} />
 
-            {/* Mot de passe oublié */}
-            {!isSignup && (
-                <TouchableOpacity onPress={gererMotDePasseOublie}>
-                    <ThemedText style={[styles.underlineText, styles.rightText]}>
-                        Mot de passe oublié ?
-                    </ThemedText>
-                </TouchableOpacity>
-            )}
+            {/* Affiche le bouton mot de passe oublié */}
+            <ForgotPasswordButton isSignup={isSignup} onPress={() => setShowForgotPasswordModal(true)} />
 
             {/* Affiche les actions associées à l'authentification */}
             <AuthActions
@@ -192,5 +184,6 @@ export const styles = StyleSheet.create({
         color: "red",
         fontWeight: "500",
     },
+    
 });
 
