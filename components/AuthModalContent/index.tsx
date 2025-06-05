@@ -1,32 +1,24 @@
-import React, { useEffect, useState } from "react";
-import { View, TouchableOpacity } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
-import { Button } from "@/components/Button";
-import Logo from "../Logo";
-import { Row } from "../Row";
-import { CustomTextInput } from "../CustomTextInput";
+import { useUser } from "@/contexts/UserContext";
 import { useLogin } from "@/hooks/auth/useLogin";
+import { useRegister } from "@/hooks/auth/useRegister";
+import { useResendActivationEmail } from "@/hooks/auth/useResendActivationEmail";
+import React, { useState } from "react";
+import { TouchableOpacity, View, StyleSheet } from "react-native";
 import Toast from "react-native-toast-message";
 import { LoadingOverlay } from "../LoadingOverlay";
-import { validateAuthForm } from "@/components/AuthModalContent/validation";
-import { TermsOfUse } from "./TermsOfUse";
-import { styles } from "./styles";
-import { ROUTES } from "@/constants/Routes";
-import { router } from "expo-router";
-import { useRegister } from "@/hooks/auth/useRegister";
-import { EmailVerificationModal } from "./EmailVerificationModal";
-import { useResendActivationEmail } from "@/hooks/auth/useResendActivationEmail";
-import { useUser } from "@/contexts/UserContext";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import BoutonSeSouvenirDeMoi from "./BoutonSeSouvenirDeMoi";
-
-interface AuthFormState {
-    email: string;
-    pseudo: string;
-    password: string;
-    confirmPassword: string;
-}
-
+import Logo from "../Logo";
+import { getAuthTexts } from "./functions/authTexts";
+import { EmailVerificationModal } from "./components/EmailVerificationModal";
+import { TermsOfUse } from "./components/TermsOfUse";
+import { AuthActions } from "./components/AuthActions";
+import { AuthFormFields } from "./components/AuthFormFields";
+import { useHandleAuthEffect } from "./hooks/useHandleAuthEffect";
+import { useHandleAuthErrors } from "./hooks/useHandleAuthErrors";
+import { useAuthSubmit } from "./hooks/useAuthSubmit";
+import { useResendActivationHandler } from "./hooks/useResendActivationHandler";
+import { ToggleAuthMode } from "./components/ToggleAuthmode";
+import { AuthFormState } from "./types/authFormsState";
 
 export function AuthModalContent() {
     const { setToken, setEmail, setPseudo } = useUser();
@@ -53,6 +45,8 @@ export function AuthModalContent() {
     const data = loginData || signupData;
     const error = loginError || signupError || resendActivationEmailError;
 
+    const texts = getAuthTexts(isSignup);
+
     const handleChange = (field: keyof AuthFormState, value: string) => {
         setFormData(prevData => ({
             ...prevData,
@@ -65,81 +59,29 @@ export function AuthModalContent() {
         setIsSignup((prev) => !prev);
         setErrorMessage("");
         setFormData({
-            email: "sebastien.drillaud@gmail.com",
-            pseudo: "seb",
-            password: "Menace3232",
-            confirmPassword: "Menace3232",
+            email: "",
+            pseudo: "",
+            password: "",
+            confirmPassword: "",
         });
     };
 
-    // Textes 
-    const texts = isSignup
-        ? {
-            title: "Créez un compte gratuitement",
-            toggle: "Connectez-vous.",
-            togglePrompt: "Déjà un compte ?",
-            emailPlaceholder: "Email",
-            button: "Créer un compte",
-        }
-        : {
-            title: "Connectez-vous à votre compte",
-            toggle: "Créez-en un.",
-            togglePrompt: "Pas encore de compte ?",
-            emailPlaceholder: "Pseudo ou email",
-            button: "Se connecter",
-        };
+    // Action soumission du formulaire
+    const { handleSubmit } = useAuthSubmit({
+        formData,
+        isSignup,
+        submitLogin,
+        submitSignup,
+        setErrorMessage
+    });
 
-    const validerFormulaire = () => {
-        const validationResult = validateAuthForm({
-            email: formData.email,
-            pseudo: isSignup ? formData.pseudo : undefined,
-            password: formData.password,
-            confirmPassword: isSignup ? formData.confirmPassword : undefined,
-            isSignup,
-        });
-
-        if (Object.keys(validationResult).length > 0) {
-            const messages = Object.values(validationResult).join("\n");
-            setErrorMessage(messages);
-            return false;
-        }
-
-        setErrorMessage("");
-        return true;
-    };
-
-    const handleSubmit = async () => {
-        if (!validerFormulaire()) {
-            return;
-        }
-
-        try {
-            setErrorMessage("");
-
-            if (isSignup) {
-                await submitSignup(formData.pseudo, formData.email, formData.password);
-            } else {
-                await submitLogin(formData.email, formData.password);
-                if (rememberMe) {
-                    console.log("Mémorisation des identifiants");
-                }
-            }
-        } catch (e) {
-            console.error("Erreur lors de la soumission:", e);
-            setErrorMessage("Une erreur s'est produite. Veuillez réessayer.");
-        }
-    };
-
-    const resendActivationEmail = async () => {
-        setErrorMessage("");
-        try {
-            await submitResendActivationEmail(formData.email);
-            setShowEmailModal(true);
-        } catch (e) {
-            console.error("Erreur lors de la soumission:", e);
-            setErrorMessage("Une erreur s'est produite. Veuillez réessayer.");
-        }
-    }
+    // Action renvoie du mail de validation du compte
+    const { resendActivationEmail } = useResendActivationHandler({
+        email: formData.email,
+        submitResendActivationEmail,
+        setShowEmailModal,
+        setErrorMessage
+    });
 
     const gererMotDePasseOublie = () => {
         console.log("Mot de passe oublié pour:", formData.email,);
@@ -151,68 +93,26 @@ export function AuthModalContent() {
         });
     };
 
-    useEffect(() => {
-        if (data) {
-            const handleAuth = async () => {
-                const message = isSignup ? 'Compte créé avec succès !' : 'Connexion réussie !';
+    // Soumission ok
+    useHandleAuthEffect({
+        data,
+        isSignup,
+        rememberMe,
+        setToken,
+        setEmail,
+        setPseudo,
+        resetLogin,
+        resetSignup,
+        setIsSignup,
+        setShowEmailModal
+    });
 
-                Toast.show({
-                    type: 'success',
-                    text1: 'Succès',
-                    text2: message,
-                });
-
-                if (!isSignup && data?.token && data?.email && data?.username) {
-                    setToken(data.token);
-                    setEmail(data.email);
-                    setPseudo(data.username);
-
-                    if (rememberMe) {
-                        await AsyncStorage.multiSet([
-                            ["userToken", data.token],
-                            ["userEmail", data.email],
-                            ["userPseudo", data.username],
-                            ["rememberMe", "true"]
-                        ]);
-                    } else {
-                        await AsyncStorage.multiRemove([
-                            "userToken",
-                            "userEmail",
-                            "userPseudo",
-                            "rememberMe"
-                        ]);
-                    }
-                }
-
-                if (!isSignup) {
-                    resetLogin();
-                    setTimeout(() => {
-                        router.replace(ROUTES.PLANNING);
-                    }, 500);
-                } else {
-                    resetSignup();
-                    setIsSignup(false);
-                    setShowEmailModal(true);
-                }
-            };
-
-            handleAuth();
-        }
-    }, [data, isSignup, resetLogin, resetSignup, rememberMe, setEmail, setPseudo, setToken]);
-
-    useEffect(() => {
-        if (error) {
-            setErrorMessage(error);
-        }
-        const needActivationMessage = "Votre compte n'est pas encore activé.";
-
-        if (error === needActivationMessage) {
-            setShowResendEmailButton(true);
-        } else {
-            setShowResendEmailButton(false);
-        }
-    }, [error]);
-
+    // Soumission erreur
+    useHandleAuthErrors({
+        error,
+        setErrorMessage,
+        setShowResendEmailButton
+    });
 
 
 
@@ -232,48 +132,21 @@ export function AuthModalContent() {
                 {texts.title}
             </ThemedText>
 
-            <Row style={styles.centerTextRow}>
-                <ThemedText>{texts.togglePrompt}</ThemedText>
-                <TouchableOpacity onPress={toggleAuthMode}>
-                    <ThemedText style={styles.underlineText}>
-                        {texts.toggle}
-                    </ThemedText>
-                </TouchableOpacity>
-            </Row>
-
-            {isSignup && (
-                <CustomTextInput
-                    placeholder="Pseudo"
-                    value={formData.pseudo}
-                    onChangeText={(text) => handleChange("pseudo", text)}
-                    autoCapitalize="none"
-                />
-            )}
-
-            <CustomTextInput
-                placeholder={texts.emailPlaceholder}
-                value={formData.email}
-                onChangeText={(text) => handleChange("email", text)}
-                keyboardType={isSignup ? "email-address" : "default"}
-                autoCapitalize="none"
+            {/* Bascule du mode login à register */}
+            <ToggleAuthMode
+                toggleAuthMode={toggleAuthMode}
+                togglePrompt={texts.togglePrompt}
+                toggleText={texts.toggle}
             />
 
-            <CustomTextInput
-                placeholder="Mot de passe"
-                value={formData.password}
-                onChangeText={(text) => handleChange("password", text)}
-                secureTextEntry
-            />
+            {/* Affiche les champs du formulaire */}
+            <AuthFormFields
+                formData={formData}
+                isSignup={isSignup}
+                texts={texts}
+                handleChange={handleChange} />
 
-            {isSignup && (
-                <CustomTextInput
-                    placeholder="Comfirmer le mot de passe"
-                    value={formData.confirmPassword}
-                    onChangeText={(text) => handleChange("confirmPassword", text)}
-                    secureTextEntry
-                />
-            )}
-
+            {/* Mot de passe oublié */}
             {!isSignup && (
                 <TouchableOpacity onPress={gererMotDePasseOublie}>
                     <ThemedText style={[styles.underlineText, styles.rightText]}>
@@ -282,37 +155,42 @@ export function AuthModalContent() {
                 </TouchableOpacity>
             )}
 
-            <Button
-                label={texts.button}
-                onPress={handleSubmit}
-                style={styles.buttonSmall}
+            {/* Affiche les actions associées à l'authentification */}
+            <AuthActions
+                isSignup={isSignup}
+                texts={texts}
+                handleSubmit={handleSubmit}
+                rememberMe={rememberMe}
+                setRememberMe={setRememberMe}
+                showTerms={showTerms}
+                setShowTerms={setShowTerms}
+                showResendEmailButton={showResendEmailButton}
+                resendActivationEmail={resendActivationEmail}
             />
 
-            {!isSignup && <BoutonSeSouvenirDeMoi rememberMe={rememberMe} setRememberMe={setRememberMe} />}
-
-            {isSignup && (
-                <TouchableOpacity onPress={() => setShowTerms(true)}>
-                    <ThemedText style={[styles.underlineText, styles.centerText]}>
-                        En créant un compte j&apos;accepte les conditions d&apos;utilisation
-                    </ThemedText>
-                </TouchableOpacity>
-            )}
-
+            {/* Affiche les erreurs éventuelles */}
             {!!errorMessage && <ThemedText style={styles.error}>{errorMessage}</ThemedText>}
 
-            {showResendEmailButton && (
-                <Button
-                    label="Renvoyer l'email d'activation"
-                    backgroundColor="jaune"
-                    color="ombre"
-                    onPress={() => resendActivationEmail()}
-                    style={styles.buttonSmall}
-                />
-            )}
-
-
-            <LoadingOverlay visible={loading} text="Connexion en cours..." />
+            {/* Affiche un modal pendent l'éxécution */}
+            <LoadingOverlay visible={loading} text={texts.loadingText} />
         </View>
     );
 }
+
+export const styles = StyleSheet.create({
+    container: {
+        gap: 15,
+        padding: 10,
+        alignSelf: "stretch",
+    },
+    centerText: {
+        textAlign: "center",
+    },
+    error: {
+        marginTop: 10,
+        textAlign: "center",
+        color: "red",
+        fontWeight: "500",
+    },
+});
 

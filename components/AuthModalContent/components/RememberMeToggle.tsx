@@ -1,15 +1,15 @@
-import React from "react";
-import { Switch } from "react-native";
-import { styles } from "./styles";
-import { Row } from "../Row";
-import { ThemedText } from "../ThemedText";
 import { useThemeColors } from "@/hooks/useThemeColors";
-interface BoutonSeSouvenirDeMoiProps {
+import React from "react";
+import { Switch, StyleSheet } from "react-native";
+import { Row } from "../../Row";
+import { ThemedText } from "../../ThemedText";
+
+interface Props {
     rememberMe: boolean;
     setRememberMe: (value: boolean) => void;
 }
 
-const BoutonSeSouvenirDeMoi: React.FC<BoutonSeSouvenirDeMoiProps> = ({
+const RememberMeToggle: React.FC<Props> = ({
     rememberMe,
     setRememberMe,
 }) => {
@@ -28,5 +28,20 @@ const BoutonSeSouvenirDeMoi: React.FC<BoutonSeSouvenirDeMoiProps> = ({
     );
 };
 
+export const styles = StyleSheet.create({
+    buttonSmall: {
+        alignSelf: "center",
+        paddingHorizontal: 15,
+        paddingVertical: 8,
+        marginTop: 10,
+    },
+    rememberMeRow: {
+        alignItems: "center",
+        marginVertical: 10,
+    },
+    rememberMeText: {
+        marginLeft: 8,
+    },
+});
 
-export default BoutonSeSouvenirDeMoi;
+export default RememberMeToggle;

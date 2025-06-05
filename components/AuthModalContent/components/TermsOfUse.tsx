@@ -1,10 +1,9 @@
-// components/auth/TermsOfUse.tsx
 import React from "react";
 import { View, StyleSheet, ScrollView } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { Button } from "@/components/Button";
 
-type TermsOfUseProps = {
+type Props = {
     onClose: () => void;
 };
 
@@ -81,7 +80,7 @@ const termsData = [
     }
 ];
 
-export function TermsOfUse({ onClose }: TermsOfUseProps) {
+export function TermsOfUse({ onClose }: Props) {
     return (
         <ScrollView
             style={styles.container}

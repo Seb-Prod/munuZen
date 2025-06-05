@@ -4,6 +4,7 @@ type ThemeColors = {
   vert: string
   jaune: string
   ivoire: string
+  rouge:string
   fondNavBar: string
   texte:string
   fondInput:string
@@ -15,6 +16,7 @@ export const Colors: Record<Theme, ThemeColors> = {
     vert: "#009B4D",
     jaune: "#FFCC00",
     ivoire: "#FAF5E9",
+    rouge:"#FF0000",
     fondNavBar: "#FDFEFE",
     texte:"#2a2a2a",
     fondInput:"#FDFEFE",
@@ -24,6 +26,7 @@ export const Colors: Record<Theme, ThemeColors> = {
     vert: "#00C46A",
     jaune: "#FFD93B",
     ivoire: "#1E1E1E",
+    rouge:'#8B0000',
     fondNavBar:"#303030",
     texte:"#dfdfdf",
     fondInput:"#3e3e3e",

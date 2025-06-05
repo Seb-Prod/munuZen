@@ -3,7 +3,7 @@ import { View, StyleSheet, ScrollView } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { Button } from "@/components/Button";
 
-type EmailVerificationModalProps = {
+type Props = {
   email: string;
   onClose: () => void;
 };
@@ -34,7 +34,7 @@ const emailVerificationData = [
   },
 ];
 
-export function EmailVerificationModal({ email, onClose }: EmailVerificationModalProps) {
+export function EmailVerificationModal({ email, onClose }: Props) {
   // on injecte l'email dans le contenu
   const contentWithEmail = emailVerificationData.map(item =>
     item.id === "email"
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
   emailText: {
     fontWeight: "700",
     fontSize: 15,
-    color: "#1D4ED8", // bleu accentué
+    color: "#1D4ED8",
     textAlign: "center",
     marginBottom: 12,
   },

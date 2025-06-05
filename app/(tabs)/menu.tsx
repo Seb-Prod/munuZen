@@ -1,19 +1,32 @@
 import { Button } from "@/components/Button";
 import { useThemeColors } from "@/hooks/useThemeColors";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { BottomModal } from "@/components/BottomModal";
 import { AuthModalContent } from "@/components/AuthModalContent";
-import { useNavigation } from "expo-router";
+import { useUser } from "@/contexts/UserContext";
 
 export default function Menu() {
   const colors = useThemeColors();
-  const navigation = useNavigation();
+ const { token, email, pseudo, resetUser } = useUser();
   
   const [isModalVisible, setModalVisible] = useState(false);
+  const [isLogin, setIsLogin] = useState(false);
+
+  useEffect(() => {
+    if (pseudo) {
+      setIsLogin(true);
+    } else {
+      setIsLogin(false);
+    }
+  }, [pseudo]);
 
   const handleLogin = () => {
     setModalVisible(true);
+  };
+
+   const handleLogout = () => {
+    resetUser();
   };
 
   const closeModal = () => {
@@ -23,9 +36,10 @@ export default function Menu() {
   return (
     <View style={[styles.container, { backgroundColor: colors.ivoire }]}>
       <Button
-        label="Connexion"
+        label={isLogin ? "Déconnexion" : "Connexion"}
         style={{ alignSelf: "flex-end" }}
-        onPress={handleLogin}
+        onPress={isLogin ? handleLogout : handleLogin}
+        backgroundColor={isLogin ? "rouge": "vert"}
       />
 
       <BottomModal visible={isModalVisible} onClose={closeModal} backgroundColor={colors.fondNavBar}>
