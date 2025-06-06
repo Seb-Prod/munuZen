@@ -5,7 +5,6 @@ import { useRegister } from "@/hooks/auth/useRegister";
 import { useResendActivationEmail } from "@/hooks/auth/useResendActivationEmail";
 import React, { useState } from "react";
 import { View, StyleSheet } from "react-native";
-import Toast from "react-native-toast-message";
 import { LoadingOverlay } from "../LoadingOverlay";
 import Logo from "../Logo";
 import { getAuthTexts } from "./functions/authTexts";
@@ -20,7 +19,8 @@ import { useResendActivationHandler } from "./hooks/useResendActivationHandler";
 import { ToggleAuthMode } from "./components/ToggleAuthmode";
 import { AuthFormState } from "./types/authFormsState";
 import ForgotPasswordButton from "./components/ForgotPasswordButton";
-import { ForgotPasswordForm } from "./components/ForgotPasswordForm";
+import { router } from "expo-router";
+import { ROUTES } from "@/constants/Routes";
 
 export function AuthModalContent() {
     const { setToken, setEmail, setPseudo } = useUser();
@@ -43,7 +43,6 @@ export function AuthModalContent() {
     const [showTerms, setShowTerms] = useState(false);
     const [showEmailModal, setShowEmailModal] = useState(false);
     const [showResendEmailButton, setShowResendEmailButton] = useState(false);
-    const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
 
     const loading = loginLoading || signupLoading || resendActivationEmailLoading;
     const data = loginData || signupData;
@@ -118,11 +117,6 @@ export function AuthModalContent() {
         return <EmailVerificationModal email={formData.email} onClose={() => setShowEmailModal(false)} />;
     }
 
-    // Affiche le formulaire d'oublie de mot de passe
-    if(showForgotPasswordModal){
-        return <ForgotPasswordForm formData={formData} handleChange={handleChange} onClose={() => setShowForgotPasswordModal(false)}/>
-    }
-
     return (
         <View style={styles.container}>
             <Logo />
@@ -145,7 +139,7 @@ export function AuthModalContent() {
                 handleChange={handleChange} />
 
             {/* Affiche le bouton mot de passe oublié */}
-            <ForgotPasswordButton isSignup={isSignup} onPress={() => setShowForgotPasswordModal(true)} />
+            <ForgotPasswordButton isSignup={isSignup} onPress={() => router.replace(ROUTES.FORGOTPASSWORD)} />
 
             {/* Affiche les actions associées à l'authentification */}
             <AuthActions

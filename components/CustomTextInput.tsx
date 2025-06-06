@@ -14,6 +14,7 @@ export function CustomTextInput({
   label, 
   borderColor, 
   backgroundColor,
+  style,
   ...rest 
 }: Props) {
   const colors = useThemeColors();
@@ -28,7 +29,8 @@ export function CustomTextInput({
             backgroundColor: backgroundColor ? colors[backgroundColor] : colors.fondInput,
             color: colors.texte,
             shadowColor: colors.ombre
-          }
+          },
+          style,
         ]}
         placeholder={placeholder}
         placeholderTextColor={colors.texte + '80'}
