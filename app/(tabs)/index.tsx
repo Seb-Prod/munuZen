@@ -1,23 +1,20 @@
-
-import { useUser } from "@/contexts/UserContext";
+import { ThemedText } from "@/components/ThemedText";
 import { useThemeColors } from "@/hooks/useThemeColors";
 import React from "react";
-import { Text, SafeAreaView, StyleSheet, Button } from "react-native";
+import { StyleSheet, View } from "react-native";
 
-export default function Index() {
-  const colors = useThemeColors();
-  const { token, email, pseudo, resetUser } = useUser();
+export default function Screen() {
+  const colors =useThemeColors();
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.ivoire }]}>
-      <Text>Bienvenue {pseudo} ({email})</Text>
-      <Button title="Se déconnecter" onPress={resetUser} />
-    </SafeAreaView>
-
+    <View style={[styles.container, { backgroundColor: colors.ivoire }]}>
+      <ThemedText variant="headline" color="vert">Mon planning</ThemedText>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1
+  container:{
+    flex:1,
+    padding:10,
   }
 })

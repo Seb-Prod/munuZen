@@ -1,18 +1,20 @@
 import { ThemedText } from "@/components/ThemedText";
+import { useThemeColors } from "@/hooks/useThemeColors";
 import React from "react";
-import { SafeAreaView, StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 
-export default function Recipes() {
+export default function Screen() {
+  const colors =useThemeColors();
   return (
-    <SafeAreaView style={styles.container}>
-      <ThemedText variant="headline" color="jaune">Ajouter une recette</ThemedText>
-    </SafeAreaView>
-
+    <View style={[styles.container, { backgroundColor: colors.ivoire }]}>
+      <ThemedText variant="headline" color="vert">Ajouter une recette</ThemedText>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container:{
-    flex:1
+    flex:1,
+    padding:10,
   }
 })
