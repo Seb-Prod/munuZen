@@ -16,7 +16,7 @@ export default function TabsLayout() {
       </SafeAreaView>
 
       {/* NavBar hors safe area (au ras du bas de l'écran) */}
-      <View style={[styles.navbar, { backgroundColor: colors.fondNavBar }]}>
+      <View style={[styles.navbar, { backgroundColor: colors.ivoire, borderTopColor: colors.separateur, borderTopWidth: 1 }]}>
         <NavBar />
       </View>
     </View>

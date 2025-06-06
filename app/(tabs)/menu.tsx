@@ -5,6 +5,8 @@ import { StyleSheet, View } from "react-native";
 import { BottomModal } from "@/components/BottomModal";
 import { AuthModalContent } from "@/components/AuthModalContent";
 import { useUser } from "@/contexts/UserContext";
+import { Link, router } from "expo-router";
+import { ROUTES } from "@/constants/Routes";
 
 export default function Menu() {
   const colors = useThemeColors();
@@ -41,6 +43,12 @@ export default function Menu() {
         onPress={isLogin ? handleLogout : handleLogin}
         backgroundColor={isLogin ? "rouge": "vert"}
       />
+
+      
+        <Button
+          label="À propos"
+          style={{ marginTop: 20, alignSelf: "center" }} onPress={() => router.replace(ROUTES.ABOUT)}      />
+     
 
       <BottomModal visible={isModalVisible} onClose={closeModal} backgroundColor={colors.fondNavBar}>
         <AuthModalContent/>

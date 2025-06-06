@@ -11,7 +11,7 @@ import { CustomTextInput } from "@/components/CustomTextInput";
 import { Button } from "@/components/Button";
 import Toast from "react-native-toast-message";
 
-export default function Menu() {
+export default function Screen() {
     const colors = useThemeColors();
     const [email, setEmail] = useState("");
 

@@ -1,10 +1,19 @@
 import { Image, StyleSheet, View } from "react-native";
 
-export default function Logo() {
+type Props = {
+  img?: "logo" | "sebProd"; // les images autorisées
+};
+
+const images = {
+  logo: require("@/assets/images/logo.png"),
+  sebProd: require("@/assets/images/sebprod.png"),
+};
+
+export default function Logo({ img = "logo" }: Props) {
   return (
     <View style={styles.container}>
       <Image
-        source={require("@/assets/images/logo.png")}
+        source={images[img]}
         style={styles.logo}
       />
     </View>
