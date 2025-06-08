@@ -7,18 +7,24 @@ type Props = {
   label?: string;
   borderColor?: keyof typeof Colors["light"];
   backgroundColor?: keyof typeof Colors["light"];
+  multiline?: boolean;
+  numberOfLines?: number;
+  minHeight?: number;
 } & TextInputProps;
 
-export function CustomTextInput({ 
-  placeholder, 
-  label, 
-  borderColor, 
+export function CustomTextInput({
+  placeholder,
+  label,
+  borderColor,
   backgroundColor,
+  multiline = false,
+  numberOfLines = 1,
+  minHeight,
   style,
-  ...rest 
+  ...rest
 }: Props) {
   const colors = useThemeColors();
-  
+
   return (
     <View style={styles.container}>
       <TextInput
@@ -28,12 +34,16 @@ export function CustomTextInput({
             borderColor: borderColor ? colors[borderColor] : colors.texte,
             backgroundColor: backgroundColor ? colors[backgroundColor] : colors.fondInput,
             color: colors.texte,
-            shadowColor: colors.ombre
+            shadowColor: colors.ombre,
+            minHeight: multiline ? (minHeight || 100) : undefined,
+            textAlignVertical: multiline ? 'top' : 'center',
           },
           style,
         ]}
         placeholder={placeholder}
         placeholderTextColor={colors.texte + '80'}
+        multiline={multiline}
+        numberOfLines={multiline ? numberOfLines : 1}
         {...rest}
       />
     </View>

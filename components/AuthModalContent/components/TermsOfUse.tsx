@@ -4,7 +4,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { Button } from "@/components/Button";
 
 type Props = {
-    onClose: () => void;
+    onClose?: () => void;
 };
 
 const termsData = [
@@ -124,9 +124,11 @@ export function TermsOfUse({ onClose }: Props) {
                 }
             })}
             
-            <View style={styles.buttonContainer}>
-                <Button label="Retour" onPress={onClose} style={styles.button} />
-            </View>
+            {onClose && (
+                <View style={styles.buttonContainer}>
+                    <Button label="Retour" onPress={onClose} style={styles.button} />
+                </View>
+            )}
         </ScrollView>
     );
 }

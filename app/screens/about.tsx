@@ -78,7 +78,6 @@ const styles = StyleSheet.create({
         paddingBottom: 40, // pour ne pas coller au footer
     },
     title: {
-        fontSize: 24,
         marginBottom: 16,
         textAlign: "center",
     },

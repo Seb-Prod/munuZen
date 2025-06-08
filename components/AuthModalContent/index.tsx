@@ -23,7 +23,7 @@ import { router } from "expo-router";
 import { ROUTES } from "@/constants/Routes";
 
 export function AuthModalContent() {
-    const { setToken, setEmail, setPseudo } = useUser();
+    const { setToken, setEmail, setPseudo, setRole } = useUser();
 
     const [formData, setFormData] = useState<AuthFormState>({
         email: "",
@@ -94,6 +94,7 @@ export function AuthModalContent() {
         setToken,
         setEmail,
         setPseudo,
+        setRole,
         resetLogin,
         resetSignup,
         setIsSignup,

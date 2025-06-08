@@ -11,6 +11,7 @@ interface Params {
   setToken: (token: string) => void;
   setEmail: (email: string) => void;
   setPseudo: (pseudo: string) => void;
+  setRole: (role: string) => void;
   resetLogin: () => void;
   resetSignup: () => void;
   setIsSignup: (value: boolean) => void;
@@ -24,6 +25,7 @@ export const useHandleAuthEffect = ({
   setToken,
   setEmail,
   setPseudo,
+  setRole,
   resetLogin,
   resetSignup,
   setIsSignup,
@@ -44,12 +46,14 @@ export const useHandleAuthEffect = ({
           setToken(data.token);
           setEmail(data.email);
           setPseudo(data.username);
+          setRole(data.role);
 
           if (rememberMe) {
             await AsyncStorage.multiSet([
               ["userToken", data.token],
               ["userEmail", data.email],
               ["userPseudo", data.username],
+              ["role", data.role],
               ["rememberMe", "true"],
             ]);
           } else {
@@ -71,5 +75,5 @@ export const useHandleAuthEffect = ({
 
       handleAuth();
     }
-  }, [data, isSignup, rememberMe, resetLogin, resetSignup, setEmail, setIsSignup, setPseudo, setShowEmailModal, setToken]);
+  }, [data, isSignup, rememberMe, resetLogin, resetSignup, setEmail, setIsSignup, setPseudo, setShowEmailModal, setToken, setRole]);
 };
