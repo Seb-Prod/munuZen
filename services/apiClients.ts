@@ -50,6 +50,7 @@ export async function apiGet<T>(endpoint: string, token?: string): Promise<ApiRe
  * @param token - Token d'authentification (optionnel)
  */
 export async function apiPost<T>(endpoint: string, body: object, token?: string): Promise<ApiResponse<T>> {
+  //console.log(body);
   try {
     const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
       method: 'POST',

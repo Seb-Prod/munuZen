@@ -1,6 +1,6 @@
 import { useThemeColors } from "@/hooks/useThemeColors";
 import React, { useState } from "react";
-import { Alert, Linking, StyleSheet, View, TouchableOpacity } from "react-native";
+import { Alert, Linking, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { Row } from "@/components/Row";

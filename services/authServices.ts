@@ -1,5 +1,5 @@
 import { ApiDataWrapper, ApiResponse } from "@/types/api-response";
-import { LoginResult, RegisterResult } from "@/types/user";
+import { LoginResult, RefreshTokenResult, RegisterResult } from "@/types/user";
 import { apiPost } from "./apiClients";
 
 
@@ -10,6 +10,13 @@ export async function login(
 ): Promise<ApiResponse<ApiDataWrapper<LoginResult>>> {
   const data = { email, password };
   return apiPost<ApiDataWrapper<LoginResult>>('login', data);
+}
+
+export async function refreshToken(
+  refreshToken:string,
+): Promise<ApiResponse<ApiDataWrapper<RefreshTokenResult>>>{
+  const data ={refreshToken};
+  return apiPost<ApiDataWrapper<RefreshTokenResult>>('refresh-token', data);
 }
 
 export async function register(
