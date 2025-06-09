@@ -6,42 +6,81 @@ import { useUser } from "@/contexts/UserContext";
 
 export default function Screen() {
   const colors = useThemeColors();
-  const { tokenExpiresAt } = useUser();
+  const { tokenExpiresAt, refreshTokenExpiresAt } = useUser();
+
   const [timeLeft, setTimeLeft] = useState<string>("");
+  const [refreshCountdown, setRefreshCountdown] = useState<string>("");
+  const [tokenDuration, setTokenDuration] = useState<string>("");
+  const [refreshTokenExpiryFormatted, setRefreshTokenExpiryFormatted] = useState<string>("");
 
   useEffect(() => {
-    if (!tokenExpiresAt) return;
+  if (!tokenExpiresAt || isNaN(tokenExpiresAt)) return;
 
-    const expiresAt = tokenExpiresAt;
+  const updateCountdowns = () => {
+    const now = Date.now();
+    const timeRemaining = tokenExpiresAt - now;
 
-    if (isNaN(expiresAt)) return;
+    // temps total du token = temps écoulé + temps restant
+    const elapsed = now - (tokenExpiresAt! - timeRemaining);
+    const totalTokenDuration = timeRemaining + elapsed;
 
-    const updateTimeLeft = () => {
-      const now = Date.now();
-      const diff = expiresAt - now;
-
-      if (diff <= 0) {
-        setTimeLeft("Session expirée");
-        return;
-      }
-
-      const minutes = Math.floor(diff / 60000);
-      const seconds = Math.floor((diff % 60000) / 1000);
+    if (timeRemaining <= 0) {
+      setTimeLeft("Session expirée");
+      setRefreshCountdown("N/A");
+    } else {
+      const minutes = Math.floor(timeRemaining / 60000);
+      const seconds = Math.floor((timeRemaining % 60000) / 1000);
       setTimeLeft(`${minutes}m ${seconds}s`);
-    };
 
-    updateTimeLeft(); // appel immédiat
-    const interval = setInterval(updateTimeLeft, 1000); // maj chaque seconde
+      const refreshTime = tokenExpiresAt - 5 * 60 * 1000;
+      const refreshDiff = refreshTime - now;
 
-    return () => clearInterval(interval);
-  }, [tokenExpiresAt]);
+      if (refreshDiff <= 0) {
+        setRefreshCountdown("En cours ou déjà tenté");
+      } else {
+        const rMin = Math.floor(refreshDiff / 60000);
+        const rSec = Math.floor((refreshDiff % 60000) / 1000);
+        setRefreshCountdown(`${rMin}m ${rSec}s`);
+      }
+    }
+
+    // 🕒 Durée réelle du token
+    const totalMin = Math.floor(totalTokenDuration / 60000);
+    const totalSec = Math.floor((totalTokenDuration % 60000) / 1000);
+    setTokenDuration(`${totalMin}m ${totalSec}s`);
+  };
+
+  updateCountdowns();
+  const interval = setInterval(updateCountdowns, 1000);
+  return () => clearInterval(interval);
+}, [tokenExpiresAt]);
+
+  // 📅 Formatage de la date d’expiration du refresh token
+  useEffect(() => {
+    if (!refreshTokenExpiresAt || isNaN(refreshTokenExpiresAt)) return;
+
+    const date = new Date(refreshTokenExpiresAt);
+    const formatted = date.toLocaleString("fr-FR", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+
+    setRefreshTokenExpiryFormatted(formatted);
+  }, [refreshTokenExpiresAt]);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.ivoire }]}>
       <ThemedText variant="headline" color="vert">Mon planning</ThemedText>
-      <ThemedText>
-        Temps avant expiration : {timeLeft}
-      </ThemedText>
+
+      <ThemedText>⏳ Temps avant expiration : {timeLeft}</ThemedText>
+      <ThemedText>🔁 Prochain refresh dans : {refreshCountdown}</ThemedText>
+      <ThemedText>🕒 Durée du token : {tokenDuration}</ThemedText>
+      <ThemedText>📅 Expiration du refresh token : {refreshTokenExpiryFormatted}</ThemedText>
     </View>
   );
 }
