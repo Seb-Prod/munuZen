@@ -77,10 +77,10 @@ export default function Screen() {
     <View style={[styles.container, { backgroundColor: colors.ivoire }]}>
       <ThemedText variant="headline" color="vert">Mon planning</ThemedText>
 
-      <ThemedText>⏳ Temps avant expiration : {timeLeft}</ThemedText>
-      <ThemedText>🔁 Prochain refresh dans : {refreshCountdown}</ThemedText>
-      <ThemedText>🕒 Durée du token : {tokenDuration}</ThemedText>
-      <ThemedText>📅 Expiration du refresh token : {refreshTokenExpiryFormatted}</ThemedText>
+      <ThemedText  style={styles.texte}>⏳ Temps avant expiration : {timeLeft}</ThemedText>
+      <ThemedText style={styles.texte}>🔁 Prochain refresh dans : {refreshCountdown}</ThemedText>
+      <ThemedText style={styles.texte}>🕒 Durée du token : {tokenDuration}</ThemedText>
+      <ThemedText style={styles.texte}>📅 Expiration du refresh token : {refreshTokenExpiryFormatted}</ThemedText>
     </View>
   );
 }
@@ -90,4 +90,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
   },
+  texte:{
+    padding:10,
+  }
 });

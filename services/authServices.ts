@@ -5,10 +5,10 @@ import { apiPost } from "./apiClients";
 
 
 export async function login(
-  email: string,
+  login: string,
   password: string
 ): Promise<ApiResponse<ApiDataWrapper<LoginResult>>> {
-  const data = { email, password };
+  const data = { login, password };
   return apiPost<ApiDataWrapper<LoginResult>>('login', data);
 }
 

@@ -21,6 +21,7 @@ export function CustomTextInput({
   numberOfLines = 1,
   minHeight,
   style,
+  secureTextEntry,
   ...rest
 }: Props) {
   const colors = useThemeColors();
@@ -44,6 +45,10 @@ export function CustomTextInput({
         placeholderTextColor={colors.texte + '80'}
         multiline={multiline}
         numberOfLines={multiline ? numberOfLines : 1}
+        secureTextEntry={secureTextEntry}
+        autoComplete={secureTextEntry ? "off" : undefined}  // désactive autocomplete sur password
+        importantForAutofill={secureTextEntry ? "no" : undefined} // désactive autofill sur password
+        textContentType={secureTextEntry ? "password" : undefined} // iOS: type contenu
         {...rest}
       />
     </View>
